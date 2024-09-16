@@ -1,0 +1,69 @@
+import pgzrun
+import random
+import time
+WIDTH = 600
+HEIGHT = 400
+#variables  
+running = True
+speed = 14
+bullets = []
+enemies = []
+score = 0
+YouWin = False
+direction = 1
+#actors
+sukuna = Actor("curse.png")
+gojo = Actor("gojo.png")
+for i in range(5):
+    enemies.append(Actor("curse.png"))
+    enemies[-1].x = 100+90 * i
+    enemies[-1].y = 5
+def on_key_down(key):
+    if key == keys.SPACE:
+        bullets.append(Actor("red.png"))
+        bullets[-1].x = gojo.x
+        bullets[-1].y = gojo.y-50
+def Win():
+    global YouWin
+    YouWin = True
+def update():
+    if keyboard.left:
+        gojo.x =gojo.x-2
+    if keyboard.right:
+        gojo.x = gojo.x+2
+    for g in bullets:
+        if g.y <= 0:
+            bullets.remove(g)
+        else:
+            g.y -= 15
+    global score, direction
+    movedown = False
+    if len(enemies) > 0 and (enemies[-1].x > WIDTH-80 or enemies[0].x < 80):
+        movedown = True
+        direction = direction * -1
+    for i in enemies:
+        i.x += 5 * direction
+        if movedown == True:
+            i.y += 30
+        for g in bullets:
+            if g.colliderect(i):
+                sounds.haki.play()
+                bullets.remove(g)
+                enemies.remove(i)
+                score += 1
+                if score == 5:
+                    Win()
+def draw():
+    screen.blit("city.jpg",(0,0))
+    screen.draw.text("score:"+str(score), color = "White", topleft = (420,20))
+    gojo.draw()
+    gojo.y = (335)
+    for i in enemies:
+        i.draw()
+    for g in bullets:
+        g.draw()
+    if YouWin == True:
+        screen.fill("white")
+        screen.draw.text("You win! you saved the world!", midtop = (300,200), color = "green", fontsize = 50)
+
+pgzrun.go()
